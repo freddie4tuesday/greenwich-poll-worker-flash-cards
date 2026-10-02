@@ -83,7 +83,7 @@ The importer should check `format` and `version`, reject anything malformed with
 
 ## Open items
 
-- **Zero tape and results tape cards:** the two answers are word-for-word identical, including "placed inside the used ballot bag." Ask the owner whether the zero tape goes somewhere else.
+- **Zero tape and results tape cards:** the two answers are word-for-word identical, including "placed inside the used ballot bag." The owner confirmed on 2026-10-02 that this is correct; leave them as they are.
 - **Card length:** some answers sit near the fit limit at phone size. The editor warns when the type would drop below 70% of the normal size.
 - **Earlier download:** the copy of the game handed out before the editor was added has only the built-in cards.
 - **Possible SharePoint embedding:** the site owner can allow `github.io` under Site settings → HTML Field Security.
