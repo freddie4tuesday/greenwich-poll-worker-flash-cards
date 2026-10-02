@@ -43,6 +43,10 @@ try {
     assert.equal(g.status, 200); assert.match(await g.text(), /Poll worker flashcards/);
     assert.equal(e.status, 200); assert.match(await e.text(), /Edit the flashcards/);
   });
+  await t("the favicon files are served and both pages link to them", async () => {
+    for (const f of ["/favicon.svg", "/favicon-32.png", "/apple-touch-icon.png"]) assert.equal((await fetch(BASE + f)).status, 200, f);
+    for (const pg of ["/", "/edit"]) assert.match(await (await fetch(BASE + pg)).text(), /rel="icon" href="\/favicon\.svg"/);
+  });
   let deck;
   await t("the deck is public and has the 52 approved cards", async () => {
     const r = await call("/api/deck"); assert.equal(r.status, 200); deck = r.data;

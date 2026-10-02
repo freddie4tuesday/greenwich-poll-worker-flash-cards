@@ -107,8 +107,8 @@ export default {
       const x = await (what === "save" ? stub.save(r.body, who) : stub.restore(r.body, who));
       return json(x.body, x.status);
     }
-    // Anything else is a file in site/ (the logo); a path with no file there gets the assets service's own "not found".
-    if (request.method === "GET" && p === "/logo-white.png") return env.ASSETS.fetch(request);
+    // The only other public files in site/: the logo and the favicon set (an icon with no file here would just be "not found").
+    if (request.method === "GET" && ["/logo-white.png", "/favicon.svg", "/favicon-32.png", "/apple-touch-icon.png"].includes(p)) return env.ASSETS.fetch(request);
     return json({ error: "not found" }, 404);
   },
 };
