@@ -1,0 +1,21 @@
+// Deploys app/index.html as the "greenwich-poll-worker-flashcards" Worker (static assets only, no server code).
+// Deploy with: npx wrangler deploy   (needs CLOUDFLARE_API_TOKEN in the environment).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "greenwich-poll-worker-flashcards",
+  // Same Cloudflare account as Ballotship and Game of Strife (owner confirmed 2026-10-02).
+  "account_id": "907c63834a38c160f1294cfc347a059a",
+  "compatibility_date": "2026-09-25",
+  "assets": {
+    // Only app/ is served, so brand/, data/ and the notes are not published.
+    "directory": "app"
+  },
+  "workers_dev": true,
+  "routes": [
+    { "pattern": "greenwichflashcards.electionadminsuite.com", "custom_domain": true },
+    // Needed: *.electionadminsuite.com/* is routed to another app (poll-worker-system), which
+    // creates its own addresses under this zone. This more specific, single-hostname route sends
+    // only this address here and leaves every other address alone.
+    { "pattern": "greenwichflashcards.electionadminsuite.com/*", "zone_name": "electionadminsuite.com" }
+  ]
+}
