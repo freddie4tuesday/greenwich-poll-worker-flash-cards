@@ -83,16 +83,21 @@ The importer should check `format` and `version`, reject anything malformed with
 
 ## Open items
 
-- **Zero tape and results tape cards:** the two answers are word-for-word identical, including "placed inside the used ballot bag." The owner confirmed on 2026-10-02 that this is correct; leave them as they are.
+- **Zero tape and results tape cards:** identical answers on purpose. The owner confirmed on 2026-10-02 that this is correct.
 - **Card length:** some answers sit near the fit limit at phone size. The editor warns when the type would drop below 70% of the normal size.
 - **Earlier download:** the copy of the game handed out before the editor was added has only the built-in cards.
 - **Possible SharePoint embedding:** the site owner can allow `github.io` under Site settings → HTML Field Security.
 
-## Hosting (added 2026-10-02)
+## Hosting and the hosted editor (added 2026-10-02)
 
-Live at https://greenwichflashcards.electionadminsuite.com as a Cloudflare Worker serving `app/` as static assets (`wrangler.jsonc`). No staging copy; the owner chose live only.
+Live at https://greenwichflashcards.electionadminsuite.com as one Cloudflare Worker (`wrangler.jsonc`). No staging copy; the owner chose live only.
 
-- Deploy: `CLOUDFLARE_API_TOKEN=… npx wrangler deploy` from the repo root. Never commit the token.
-- The hostname has its own specific route because `*.electionadminsuite.com/*` belongs to poll-worker-system, which auto-creates other addresses in the same zone. Each hostname here must be added explicitly; never use a wildcard.
-- Rollback: `npx wrangler rollback`, or redeploy an earlier commit.
-- This replaces the GitHub Pages plan in Decision 3 for the Greenwich copy. The claude.ai artifact copy still exists.
+- **Game:** `/`. Loads the deck from `/api/deck` (public). If that fails or takes 5 s, it plays the 52 built-in cards.
+- **Editor:** three-dots menu, **Edit cards**, goes to `/edit`. Sign-in is an emailed one-time link (15 minutes, once; the session lasts 1 day). Only addresses ending exactly `@greenwichct.gov` get a link, and the page gives the same answer for every address. Copied from Game of Strife's content library.
+- **Editing flow:** card edits stay in the browser until **Publish changes**. **Preview game** opens the real game in a phone-sized window playing the working copy, published or not. Every publish is a numbered version; **History** restores any of them (a restore is a new version).
+- **Store:** one Durable Object (SQLite), seeded from `seed.json`, up to 500 versions. Limits: 300 cards, question 200 and answer 400 characters.
+- **What is not built:** logos, colors, closing message and signatures are still fixed in `site/index.html`; only the cards are editable. The "deck builder" idea above is not needed for Greenwich and is parked.
+- **Deploy:** `npm test`, `node tests/ui.mjs`, then `CLOUDFLARE_API_TOKEN=… npx wrangler deploy`. Rollback: `npx wrangler rollback`, or redeploy an earlier commit. The saved deck lives in the store, so a code rollback does not undo card edits (use History).
+- **Sign-in email:** needs the Worker secret `RESEND_API_KEY`; sends from greenwichflashcards-no-reply@electionadminsuite.com (that address must be allowed by the Resend domain already verified for electionadminsuite.com).
+- **Decision:** the zero tape and results tape answers are identical on purpose; the owner confirmed they are correct.
+- This replaces the GitHub Pages plan in Decision 3 for the Greenwich copy. The claude.ai artifact copy still exists, but its in-page editor is no longer in this code.

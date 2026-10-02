@@ -1,0 +1,316 @@
+{
+ "cards": [
+  {
+   "id": "c001",
+   "order": 1,
+   "q": "Who is the most important person at the election?",
+   "a": "The voter. Everything is based on providing the registered voter with the best possible experience."
+  },
+  {
+   "id": "c002",
+   "order": 2,
+   "q": "What are the official hours of voting on election day?",
+   "a": "On election day all polling places are open from 6AM to 8PM."
+  },
+  {
+   "id": "c003",
+   "order": 3,
+   "q": "Who must be sworn in by the Moderator before starting work?",
+   "a": "All election officials must be sworn in prior to the start of the election."
+  },
+  {
+   "id": "c004",
+   "order": 4,
+   "q": "Can a poll worker wear a t-shirt or pin supporting a candidate?",
+   "a": "No. Poll workers must remain non-partisan and cannot wear or display any political materials."
+  },
+  {
+   "id": "c005",
+   "order": 5,
+   "q": "What does the \"75-foot sign\" signify?",
+   "a": "The boundary within which no campaigning or political discussion is allowed. It is measured in an arc from the exterior polling place doors."
+  },
+  {
+   "id": "c006",
+   "order": 6,
+   "q": "Who is allowed inside the polling place?",
+   "a": "Voters who are voting, members of the press, election officials, credentialed representatives from the Secretary of the State and individuals assisting a voter."
+  },
+  {
+   "id": "c007",
+   "order": 7,
+   "q": "What is the IVS system?",
+   "a": "The Inspire Voting System is the accessible ballot marking device available for any voter who wishes to use it."
+  },
+  {
+   "id": "c008",
+   "order": 8,
+   "q": "Can a child enter the voting booth with a parent?",
+   "a": "Yes, a child may accompany a parent into the voting booth. The parent, however, must insert their own ballot in the tabulator."
+  },
+  {
+   "id": "c009",
+   "order": 9,
+   "q": "What is Same Day Registration (SDR)?",
+   "a": "The process that allows an unregistered voter to register and vote at a designated SDR location (Town Hall). Voters who are not registered MUST come to Town Hall to take advantage of this."
+  },
+  {
+   "id": "c010",
+   "order": 10,
+   "q": "What must be displayed on a wall for all voters to see?",
+   "a": "A sample ballot and six large informational posters, including the \"Voters Bill of Rights.\""
+  },
+  {
+   "id": "c011",
+   "order": 11,
+   "q": "What is the purpose of the Moderator's Diary?",
+   "a": "To record any unusual occurrences, from machine jams to disruptive voters, to help improve future elections."
+  },
+  {
+   "id": "c012",
+   "order": 12,
+   "q": "If a voter needs assistance due to a disability or language barrier, what is the procedure?",
+   "a": "Notify the Moderator. Two election officials of differing parties will assist the voter."
+  },
+  {
+   "id": "c013",
+   "order": 13,
+   "q": "What are the acceptable forms of ID a voter can present?",
+   "a": "A pre-printed ID with their name and address; name and signature; OR name and photograph."
+  },
+  {
+   "id": "c014",
+   "order": 14,
+   "q": "A voter is on the Active list but has no ID. What is the procedure?",
+   "a": "The voter must sign the Form \"Signatory Affidavit for Voters Who Do Not Present ID.\""
+  },
+  {
+   "id": "c015",
+   "order": 15,
+   "q": "A voter is on the Inactive List. What must they do to be restored and vote?",
+   "a": "They must show a current and valid ID, and complete a new voter registration card."
+  },
+  {
+   "id": "c016",
+   "order": 16,
+   "q": "What does the letter \"A\" in red or blue next to a voter's name signify?",
+   "a": "The voter has already cast an Absentee Ballot. This voter cannot vote in person."
+  },
+  {
+   "id": "c017",
+   "order": 17,
+   "q": "At the polls, a voter needs to change their address within Greenwich. What do you do?",
+   "a": "Direct them to the Assistant Registrar or the Moderator, who will have them complete a new voter registration card."
+  },
+  {
+   "id": "c018",
+   "order": 18,
+   "q": "What do you write next to the name of a voter who casts a Provisional Ballot?",
+   "a": "\"PB\" Do NOT cross out the name."
+  },
+  {
+   "id": "c019",
+   "order": 19,
+   "q": "What do you write next to the name of a voter who casts a Challenge Ballot?",
+   "a": "\"CB\" Do NOT cross out the name."
+  },
+  {
+   "id": "c020",
+   "order": 20,
+   "q": "A voter presents a State of CT Confidentiality Card. Where is their name found?",
+   "a": "On the last page of the Official Checker book. You must not ask for their address."
+  },
+  {
+   "id": "c021",
+   "order": 21,
+   "q": "What is the purpose of the tally sheet at the checker's table?",
+   "a": "To make a hash mark for every voter processed, which is used for the hourly count reconciliation."
+  },
+  {
+   "id": "c022",
+   "order": 22,
+   "q": "What is the Supplemental List?",
+   "a": "A list of voters who have registered or made changes to their registration close to Election Day, after the main registry list was printed."
+  },
+  {
+   "id": "c023",
+   "order": 23,
+   "q": "If a voter provides a driver's license with an old address, is it valid?",
+   "a": "Yes, ID does not need to have the voter's current address. At the polling place ID is used to verify identity, not residency."
+  },
+  {
+   "id": "c024",
+   "order": 24,
+   "q": "A voter has moved from another town in CT and is not on your list. What should you do?",
+   "a": "Direct them to Town Hall for Same Day Registration (SDR)."
+  },
+  {
+   "id": "c025",
+   "order": 25,
+   "q": "Who is responsible for placing the blue \"A\"s next to the names of absentee voters?",
+   "a": "The Moderator will periodically instruct the Official Checker to do this based on updates from the Registrars of Voters."
+  },
+  {
+   "id": "c026",
+   "order": 26,
+   "q": "What must a Ballot Clerk give to every voter along with their ballot?",
+   "a": "A privacy sleeve. Please check to make sure the sleeve is empty."
+  },
+  {
+   "id": "c027",
+   "order": 27,
+   "q": "What is a \"spoiled\" ballot?",
+   "a": "A ballot that a voter makes a mistake on and returns to the Ballot Clerk to be replaced with a fresh ballot."
+  },
+  {
+   "id": "c028",
+   "order": 28,
+   "q": "How many replacement ballots can a single voter receive?",
+   "a": "A voter can receive as many replacements as they need."
+  },
+  {
+   "id": "c029",
+   "order": 29,
+   "q": "What must the Ballot Clerk do with a spoiled ballot?",
+   "a": "Place it in the \"Spoiled Ballot Envelope\" and record it on the appropriate tally sheet."
+  },
+  {
+   "id": "c030",
+   "order": 30,
+   "q": "How does the ballot clerk keep track of the number of ballots issued?",
+   "a": "By using a tally sheet, making a hash mark for every ballot given to a voter."
+  },
+  {
+   "id": "c031",
+   "order": 31,
+   "q": "What should the Ballot Clerk do with the tally sheet at the end of the night?",
+   "a": "Total the number of ballots issued and give the sheet to the Moderator as part of the closing reconciliation."
+  },
+  {
+   "id": "c032",
+   "order": 32,
+   "q": "A ballot jams, but the screen shows a GREEN checkmark. Has the ballot been counted?",
+   "a": "Yes. The vote was successfully counted. Call the Moderator to clear the jam."
+  },
+  {
+   "id": "c033",
+   "order": 33,
+   "q": "A ballot jams, but the screen shows a RED X. Has the ballot been counted?",
+   "a": "No. The vote was NOT counted. Call the Moderator immediately."
+  },
+  {
+   "id": "c034",
+   "order": 34,
+   "q": "How far away should the tabulator tender stand from the tabulator?",
+   "a": "At least 4 feet away to protect voter privacy."
+  },
+  {
+   "id": "c035",
+   "order": 35,
+   "q": "What should the tabulator tender do with used privacy sleeves?",
+   "a": "Periodically collect them and return them to the ballot clerk's table. Make certain they are EMPTY."
+  },
+  {
+   "id": "c036",
+   "order": 36,
+   "q": "What is the most important rule for a tabulator tender regarding a voter's ballot?",
+   "a": "Never look at it. The voter's right to a secret ballot is paramount."
+  },
+  {
+   "id": "c037",
+   "order": 37,
+   "q": "If the tabulator screen displays a message you don't understand, what should you do?",
+   "a": "Call the Moderator immediately."
+  },
+  {
+   "id": "c038",
+   "order": 38,
+   "q": "When can you leave your station unattended?",
+   "a": "Never. You may leave your station only when you have been relieved for a break by another election official."
+  },
+  {
+   "id": "c039",
+   "order": 39,
+   "q": "What is the Moderator's ultimate responsibility at the polling place?",
+   "a": "To ensure the election is conducted fairly, efficiently, and in accordance with all state laws and procedures."
+  },
+  {
+   "id": "c040",
+   "order": 40,
+   "q": "What must be verified before cutting the seals on the Big Blue Bin?",
+   "a": "The seal numbers must match the numbers on the Certificate for Opening of the Polls in the Moderator Return."
+  },
+  {
+   "id": "c041",
+   "order": 41,
+   "q": "How many copies of the results tape are printed at the end of the night, and where do they go?",
+   "a": "Three copies. One is returned to the ROVs, one is posted on the wall for the public, and one is placed inside the used ballot bag."
+  },
+  {
+   "id": "c042",
+   "order": 42,
+   "q": "How many copies of the zero tape are printed in the morning, and where do they go?",
+   "a": "Three copies. One is returned to the ROVs, one is posted on the wall for the public, and one is placed inside the used ballot bag."
+  },
+  {
+   "id": "c043",
+   "order": 43,
+   "q": "What is the process for a hand count of ballots from the auxiliary bin?",
+   "a": "The count must be done by two officials of different parties, and the results recorded on the Hand Count Tally Sheet."
+  },
+  {
+   "id": "c044",
+   "order": 44,
+   "q": "If the tabulator malfunctions, who must be called immediately?",
+   "a": "The Registrar of Voters' office. We will send out an additional tabulator to replace malfunctioning equipment."
+  },
+  {
+   "id": "c045",
+   "order": 45,
+   "q": "What is the role of the Special Assistant Registrar (SAR)?",
+   "a": "The SAR is to assist the Moderator with the setup of the tabulators and the IVS system. At night they will assist with packing up the equipment."
+  },
+  {
+   "id": "c046",
+   "order": 46,
+   "q": "Who is ultimately in charge of the polling place and has the final say on all procedural decisions?",
+   "a": "The Moderator."
+  },
+  {
+   "id": "c047",
+   "order": 47,
+   "q": "How many days of early voting are there for a November election?",
+   "a": "There are 14 consecutive days ending on the Sunday before Election Day."
+  },
+  {
+   "id": "c048",
+   "order": 48,
+   "q": "How many days of early voting are there for a party primary?",
+   "a": "There are 7 consecutive days ending on the Sunday before the Primary."
+  },
+  {
+   "id": "c049",
+   "order": 49,
+   "q": "What are the rules for press who want to enter a polling place?",
+   "a": "The Moderator may grant permission, but they are not allowed to record a voter's marked ballot or disrupt the voting process."
+  },
+  {
+   "id": "c050",
+   "order": 50,
+   "q": "What is the purpose of the IVS Startup Report that is printed in the morning?",
+   "a": "It verifies that the accessible voting machine has been set up correctly. It must be signed by the SAR and Moderator."
+  },
+  {
+   "id": "c051",
+   "order": 51,
+   "q": "A voter wants to cast a \"write-in\" vote. Where do they write the name of the candidate?",
+   "a": "The voter writes the name on the write-in line and fills in the oval. The name must appear under the specific office for which the candidate is running."
+  },
+  {
+   "id": "c052",
+   "order": 52,
+   "q": "During the hourly count, what numbers must be reconciled?",
+   "a": "The public counter on the tabulator, the official checker's tally sheet, and the ballot clerk's tally sheet should all match."
+  }
+ ]
+}

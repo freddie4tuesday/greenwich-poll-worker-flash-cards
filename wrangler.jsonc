@@ -1,16 +1,21 @@
-// Deploys app/index.html as the "greenwich-poll-worker-flashcards" Worker (static assets only, no server code).
+// Deploys the "greenwich-poll-worker-flashcards" Worker: the game (site/index.html), the card editor (site/edit.html) and the deck store.
 // Deploy with: npx wrangler deploy   (needs CLOUDFLARE_API_TOKEN in the environment).
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "greenwich-poll-worker-flashcards",
   // Same Cloudflare account as Ballotship and Game of Strife (owner confirmed 2026-10-02).
   "account_id": "907c63834a38c160f1294cfc347a059a",
+  "main": "src/index.js",
   "compatibility_date": "2026-09-25",
-  "assets": {
-    // Only app/ is served, so brand/, data/ and the notes are not published.
-    "directory": "app"
-  },
   "workers_dev": true,
+  // Who may sign in to the editor: addresses ending in exactly @greenwichct.gov (no subdomains, no other domains).
+  // Sign-in emails come from a Resend-verified address on electionadminsuite.com. RESEND_API_KEY is a secret set with
+  // `wrangler secret put RESEND_API_KEY`, never written here.
+  "vars": { "ALLOWED_DOMAINS": "greenwichct.gov", "MAIL_FROM": "Greenwich Poll Worker Flashcards <greenwichflashcards-no-reply@electionadminsuite.com>" },
+  // Only site/ is served, so brand/, data/ and the notes are not published. The Worker runs first so /edit and /api/* are ours.
+  "assets": { "directory": "site", "binding": "ASSETS", "run_worker_first": true, "html_handling": "none" },
+  "durable_objects": { "bindings": [{ "name": "DECK", "class_name": "Deck" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Deck"] }],
   "routes": [
     { "pattern": "greenwichflashcards.electionadminsuite.com", "custom_domain": true },
     // Needed: *.electionadminsuite.com/* is routed to another app (poll-worker-system), which
