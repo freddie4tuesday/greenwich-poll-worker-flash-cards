@@ -47,8 +47,8 @@ try {
     for (const f of ["/favicon.svg", "/favicon-32.png", "/apple-touch-icon.png"]) assert.equal((await fetch(BASE + f)).status, 200, f);
     for (const pg of ["/", "/edit"]) assert.match(await (await fetch(BASE + pg)).text(), /rel="icon" href="\/favicon\.svg"/);
   });
-  await t("the public deck is marked cacheable for a minute", async () => {
-    const r = await fetch(BASE + "/api/deck"); assert.match(r.headers.get("cache-control"), /public, max-age=60/);
+  await t("the public deck is held at the edge for a minute but rechecked by browsers", async () => {
+    const r = await fetch(BASE + "/api/deck"); assert.match(r.headers.get("cache-control"), /max-age=0, must-revalidate/);   // browsers recheck; the edge holds the 60 seconds
   });
   let deck;
   await t("the deck is public and has the 52 approved cards", async () => {

@@ -4,7 +4,7 @@
   never half of a save. Sign-in, versions and restore follow Game of Strife's content library.
 
     GET  /                         the game (public)
-    GET  /api/deck                 {version, content:{cards}}: the deck, read by the game on load (public; cached up to 60 seconds)
+    GET  /api/deck                 {version, content:{cards}}: the deck, read by the game on load (public; held at the edge up to 60 seconds)
     GET  /api/edit/deck            the same, never cached; the editor reads this one      (signed in)
     GET  /edit                     the editor page (public; it shows a sign-in box until you are signed in)
     POST /api/auth/request         {email}  -> always {ok:true}; emails a sign-in link if the address is on an allowed domain
@@ -52,11 +52,16 @@ export default {
       // can't clear them all). The editor reads /api/edit/deck instead, which is never cached, so staff always edit the real latest deck.
       // 0 turns it off (the tests do). On any cache failure the deck is read from the store as before.
       const secs = env.DECK_CACHE_SECONDS === undefined ? 60 : Math.max(0, Number(env.DECK_CACHE_SECONDS) || 0);
-      const key = new Request(url.origin + "/api/deck");   // one fixed key, so a query string can't make extra copies
-      if (secs > 0) { try { const hit = await caches.default.match(key); if (hit) return hit; } catch (_) {} }
-      const res = json(await stub.getContent(), 200, secs > 0 ? { "cache-control": "public, max-age=" + secs } : {});
-      if (secs > 0) { try { ctx.waitUntil(caches.default.put(key, res.clone())); } catch (_) {} }
-      return res;
+      const key = new Request(url.origin + "/api/deck?v=2");   // one fixed key, so a query string can't make extra copies. ?v=2 orphans the first version's entries, which were stored with a 4-hour life
+      // Found on the live site: a response stored with max-age=60 came back from the cache with max-age=14400, because the zone's "Browser Cache
+      // TTL" setting raises it, which would have held an edit back from players' browsers for 4 hours. So the stored copy carries only s-maxage
+      // (the edge's 60 seconds), and what leaves the Worker for a browser always says max-age=0, must-revalidate: the browser asks each time and
+      // the edge answers from its copy. The zone setting is shared with the other apps, so it is not changed here.
+      const out = (r) => { const h = new Headers(r.headers); h.set("cache-control", secs > 0 ? "public, max-age=0, must-revalidate" : "no-store"); return new Response(r.body, { status: r.status, headers: h }); };
+      if (secs > 0) { try { const hit = await caches.default.match(key); if (hit) return out(hit); } catch (_) {} }
+      const body = JSON.stringify(await stub.getContent());
+      if (secs > 0) { try { ctx.waitUntil(caches.default.put(key, new Response(body, { headers: { "content-type": "application/json", "cache-control": "public, s-maxage=" + secs } }))); } catch (_) {} }
+      return out(new Response(body, { headers: { "content-type": "application/json" } }));
     }
 
     const posting = () => {
