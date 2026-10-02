@@ -63,7 +63,8 @@ try {
   await t("editing a card shows it as unpublished, and Preview plays the unpublished edit", async () => {
     await p.click("#list li:first-child button"); await p.fill("#detail textarea >> nth=0", "Edited question for the preview?");
     await p.click("#detail .btn.primary"); await p.waitForSelector(".chg");
-    assert.match(await p.textContent("#pill"), /Not published/);
+    assert.match(await p.textContent("#pill"), /Not published/); assert.equal(await p.isVisible("#chgBar"), true);
+    assert.match(await p.textContent("#chgTitle"), /1 edited/); await p.screenshot({ path: SHOTS + "/unpublished-banner.png" });
     await p.click("#previewBtn"); const f = p.frameLocator("#previewFrame");
     await f.locator("#card:not([hidden])").waitFor(); await p.waitForTimeout(500);
     assert.match(await f.locator("#fq").textContent(), /Edited question for the preview\?/);
@@ -71,7 +72,7 @@ try {
   });
   await t("the public deck is unchanged until Publish, then changes", async () => {
     assert.ok(!(await (await fetch(BASE + "/api/deck")).text()).includes("Edited question for the preview"));
-    await p.click("#publishBtn"); await p.waitForFunction(() => document.getElementById("pill").textContent.includes("All changes published"));
+    await p.click("#publishBtn"); await p.waitForFunction(() => document.getElementById("pill").textContent.includes("All changes published")); assert.equal(await p.isVisible("#chgBar"), false);
     assert.ok((await (await fetch(BASE + "/api/deck")).text()).includes("Edited question for the preview"));
   });
   await t("the history shows both versions", async () => {

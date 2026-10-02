@@ -44,8 +44,23 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px soli
 .bar h1{flex:1;margin:0;font-size:1.1rem;min-width:9em}
 .bar .who{color:var(--muted);font-size:.85rem}
 .bar .btn{min-height:38px}
-.status-pill{font-size:.85rem;color:var(--muted)}
-.status-pill.dirty{color:var(--red);font-weight:700}
+/* Same idea as the flashcard maker's header status: a green dot when nothing is waiting, an amber one when there are unpublished edits */
+.status-pill{font-size:.85rem;color:var(--muted);display:inline-flex;align-items:center;gap:.4rem}
+.status-pill .dot{width:.6rem;height:.6rem;border-radius:50%;background:#3d9a62;flex:none}
+.status-pill.dirty{color:var(--ink);font-weight:700}
+.status-pill.dirty .dot{background:#d08a1c}
+
+/* ---------- Unpublished-changes banner (build 3): the old small label was easy to miss ---------- */
+.chgbar{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:10px 20px;background:rgba(185,156,53,.22);border-bottom:2px solid var(--gold);flex:none}
+.chgbar .dot{width:12px;height:12px;border-radius:50%;background:var(--gold);flex:none;box-shadow:0 0 0 3px rgba(185,156,53,.35)}
+.chgbar .txt{flex:1;min-width:14em}
+.chgbar .txt b{display:block}
+.chgbar .txt span{font-size:.88rem;color:var(--muted)}
+.chgbar .btn{min-height:36px}
+.unsaved{display:inline-block;margin-left:10px;padding:2px 10px;border-radius:999px;background:var(--gold);color:#1B1B12;font-size:.78rem;font-weight:700;vertical-align:middle}
+.list button.edited{box-shadow:inset 4px 0 0 var(--gold)}
+@media (prefers-reduced-motion: no-preference){.chgbar .dot{animation:pulse 2s ease-in-out infinite}}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(185,156,53,.15)}}
 
 /* ---------- Sign-in ---------- */
 .signin{max-width:480px;margin:8vh auto;padding:0 20px}
@@ -134,6 +149,7 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px soli
   .preview{width:170px}
   .bar{padding:8px 12px}
   .bar .who{display:none}
+  .chgbar{padding:10px 12px}
 }
 </style>
 </head>
@@ -169,12 +185,17 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px soli
   <div class="bar">
     <span class="logo"><img src="/logo-white.png" alt="Greenwich Registrars of Voters"></span>
     <h1>Edit cards</h1>
-    <span class="status-pill" id="pill"></span>
+    <span class="status-pill" id="pill" aria-live="polite"><span class="dot"></span><span id="pillText"></span></span>
     <button class="btn" id="previewBtn">Preview game</button>
     <button class="btn gold" id="publishBtn" disabled>Publish changes</button>
     <button class="btn" id="historyBtn">History</button>
     <button class="btn" id="signoutBtn">Sign out</button>
     <span class="who" id="who"></span>
+  </div>
+  <div class="chgbar" id="chgBar" role="status" hidden>
+    <span class="dot" aria-hidden="true"></span>
+    <div class="txt"><b id="chgTitle"></b><span id="chgDetail"></span></div>
+    <button class="btn danger" id="chgDiscard">Discard all changes</button>
   </div>
   <div class="main">
     <div class="listpane">
@@ -245,6 +266,15 @@ let me = '';
 
 const sameCards = (a, b) => a.length === b.length && a.every((c, i) => c.id === b[i].id && c.q === b[i].q && c.a === b[i].a);
 const hasChanges = () => !sameCards(cards, published);
+function changeSummary(){
+  const pub = new Map(published.map(c => [c.id, c])), cur = new Set(cards.map(c => c.id));
+  const added = cards.filter(c => !pub.has(c.id)).length;
+  const removed = published.filter(c => !cur.has(c.id)).length;
+  const edited = cards.filter(c => pub.has(c.id) && (pub.get(c.id).q !== c.q || pub.get(c.id).a !== c.a)).length;
+  const a = published.filter(c => cur.has(c.id)).map(c => c.id), b = cards.filter(c => pub.has(c.id)).map(c => c.id);
+  const reordered = a.some((id, i) => id !== b[i]);
+  return { added, removed, edited, reordered, total: added + removed + edited + (reordered ? 1 : 0) };
+}
 const asDeck = () => cards.map((c, i) => ({ id:c.id, order:i + 1, q:c.q, a:c.a }));
 function load(version, content){
   base = version;
@@ -298,7 +328,16 @@ $('signoutBtn').addEventListener('click', async () => {
 function renderAll(){ renderList(); updateBar(); if(!edId && !edNew) showPlaceholder(); }
 function updateBar(){
   const ch = hasChanges();
-  $('pill').textContent = ch ? 'Not published yet' : 'All changes published';
+  const sm = changeSummary(), parts = [];
+  if(sm.edited) parts.push(sm.edited + ' edited');
+  if(sm.added) parts.push(sm.added + ' added');
+  if(sm.removed) parts.push(sm.removed + ' deleted');
+  if(sm.reordered) parts.push('order changed');
+  $('chgBar').hidden = !ch;
+  $('chgTitle').textContent = ch ? 'You have unpublished changes: ' + parts.join(', ') : '';
+  $('chgDetail').textContent = 'Players do not see these until you press Publish changes at the top. They are kept only in this browser tab, so publish or discard before you close it.';
+  document.title = (ch || dirty ? '\u25CF ' : '') + 'Edit Poll Worker Flashcards';
+  $('pillText').textContent = ch ? 'Not published yet' : 'All changes published';
   $('pill').className = 'status-pill' + (ch ? ' dirty' : '');
   $('publishBtn').disabled = !ch;
 }
@@ -320,6 +359,7 @@ function renderList(){
       el('span', { class:'num', text:String(cards.indexOf(c) + 1) }),
       el('span', { class:'txt' }, el('b', { text:c.q }), el('span', { text:c.a }), changed ? el('span', { class:'chg', text: p ? 'Edited, not published' : 'New, not published' }) : null));
     if(c.id === edId) b.setAttribute('aria-current', 'true');
+    if(changed) b.classList.add('edited');
     ul.appendChild(el('li', null, b));
   });
   if(!shown.length) ul.appendChild(el('li', null, el('p', { class:'meta', style:'padding:14px', text:'No cards match.' })));
@@ -334,7 +374,8 @@ function openCard(id){
   renderList();
   const idx = id ? cards.findIndex(x => x.id === id) : -1, c = id ? cards[idx] : { q:'', a:'' };
   const d = $('detail'); d.innerHTML = ''; d.scrollTop = 0;
-  d.appendChild(el('h3', { text: id ? 'Card ' + (idx + 1) + ' of ' + cards.length : 'New card' }));
+  const badge = el('span', { class:'unsaved', text:'Unsaved edits to this card', hidden:'' });
+  d.appendChild(el('h3', { text: id ? 'Card ' + (idx + 1) + ' of ' + cards.length : 'New card' }, badge));
 
   const tq = el('textarea', { maxlength:String(MAXQ), rows:'3' }); tq.value = c.q;
   const ta = el('textarea', { maxlength:String(MAXA), rows:'6' }); ta.value = c.a;
@@ -371,7 +412,7 @@ function openCard(id){
     note.className = 'fitnote' + (s < 0.7 ? ' warn' : '');
     note.textContent = s < 0.7 ? 'This text is long, so the type will be small on the card. Consider shortening it.' : 'Players see the question on the front, then this side.';
   };
-  const onInput = () => { dirty = tq.value.trim() !== c.q || ta.value.trim() !== c.a; refresh(); };
+  const onInput = () => { dirty = tq.value.trim() !== c.q || ta.value.trim() !== c.a || !id; badge.hidden = !dirty; document.title = (dirty || hasChanges() ? '\u25CF ' : '') + 'Edit Poll Worker Flashcards'; refresh(); };
   tq.addEventListener('input', onInput); ta.addEventListener('input', onInput);
   requestAnimationFrame(refresh);
   (id ? ta : tq).focus({ preventScroll:true });
@@ -423,12 +464,19 @@ $('previewBtn').addEventListener('click', () => {
 $('previewClose').addEventListener('click', closePreview);
 $('previewScrim').addEventListener('click', e => { if(e.target === $('previewScrim')) closePreview(); });
 
+/* ---------- Banner buttons ---------- */
+$('chgDiscard').addEventListener('click', () => {
+  if(!confirm('Throw away all ' + changeSummary().total + ' unpublished change(s) and go back to what players see now?')) return;
+  cards = published.map(c => ({ ...c })); edId = null; edNew = false; dirty = false;
+  $('app').classList.remove('editing'); renderAll(); toast('Changes discarded.');
+});
+
 /* ---------- Publish ---------- */
 $('publishBtn').addEventListener('click', async () => {
   if(dirty && !confirm('The card you are editing has unsaved edits, which will not be included. Publish anyway?')) return;
   const summary = prompt('Describe this change in a few words (shown in History):', '');
   if(summary === null) return;
-  $('publishBtn').disabled = true; $('pill').textContent = 'Publishing…';
+  $('publishBtn').disabled = true; $('pillText').textContent = 'Publishing…';
   const r = await api('/api/edit/save', { base, content:{ cards: asDeck() }, summary: summary.trim() || 'Edited cards' });
   if(r.status === 200){ base = r.data.version; published = cards.map(c => ({ ...c })); toast('Published. Players see the new cards within about a minute of opening the game.'); renderAll(); return; }
   if(r.status === 401){ show('signin'); $('reqMsg').className = 'msg err'; $('reqMsg').textContent = 'You were signed out, and the changes were not published. Sign in again.'; return; }
