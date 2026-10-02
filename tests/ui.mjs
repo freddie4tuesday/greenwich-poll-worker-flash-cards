@@ -18,7 +18,7 @@ const mails = [];
 const mailSrv = http.createServer((req, res) => { let b = ""; req.on("data", (d) => b += d); req.on("end", () => { mails.push(JSON.parse(b)); res.writeHead(200, { "content-type": "application/json" }); res.end("{}"); }); });
 await new Promise((r) => mailSrv.listen(MAILPORT, "127.0.0.1", r));
 const state = fs.mkdtempSync(path.join(os.tmpdir(), "fc-ui-"));
-const dev = spawn("npx", ["wrangler", "dev", "--port", String(PORT), "--persist-to", state, "--var", "RESEND_API_KEY:test-key", "--var", "RESEND_URL:http://127.0.0.1:" + MAILPORT + "/"],
+const dev = spawn("npx", ["wrangler", "dev", "--port", String(PORT), "--persist-to", state, "--var", "RESEND_API_KEY:test-key", "--var", "DECK_CACHE_SECONDS:0", "--var", "RESEND_URL:http://127.0.0.1:" + MAILPORT + "/"],
   { detached: true, stdio: "ignore", env: { ...process.env, CLOUDFLARE_API_TOKEN: "", WRANGLER_SEND_METRICS: "false" } });
 const stop = () => { try { process.kill(-dev.pid, "SIGTERM"); } catch (_) {} mailSrv.close(); };   // the whole group: npx starts wrangler, which starts workerd
 process.on("exit", stop);

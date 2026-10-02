@@ -47,6 +47,9 @@ try {
     for (const f of ["/favicon.svg", "/favicon-32.png", "/apple-touch-icon.png"]) assert.equal((await fetch(BASE + f)).status, 200, f);
     for (const pg of ["/", "/edit"]) assert.match(await (await fetch(BASE + pg)).text(), /rel="icon" href="\/favicon\.svg"/);
   });
+  await t("the public deck is marked cacheable for a minute", async () => {
+    const r = await fetch(BASE + "/api/deck"); assert.match(r.headers.get("cache-control"), /public, max-age=60/);
+  });
   let deck;
   await t("the deck is public and has the 52 approved cards", async () => {
     const r = await call("/api/deck"); assert.equal(r.status, 200); deck = r.data;
@@ -54,6 +57,7 @@ try {
   });
   await t("editing needs a sign-in", async () => {
     assert.equal((await call("/api/edit/history")).status, 401);
+    assert.equal((await call("/api/edit/deck")).status, 401);
     assert.equal((await call("/api/edit/save", { base: 1, content: deck.content, summary: "x" })).status, 401);
   });
   await t("only exactly @greenwichct.gov addresses get a link, and the answer is always the same", async () => {
@@ -92,14 +96,14 @@ try {
     const cards = deck.content.cards.map((c) => ({ ...c })); cards[0].a = "Edited answer."; cards.push({ id: "c053", order: 53, q: "New question?", a: "New answer.", extra: "dropped" });
     const r = await call("/api/edit/save", { base: 1, content: { cards }, summary: "test edit" });
     assert.equal(r.status, 200); assert.equal(r.data.version, 2);
-    const pub = await call("/api/deck"); assert.equal(pub.data.version, 2); assert.equal(pub.data.content.cards.length, 53);
+    const pub = await call("/api/edit/deck"); assert.equal(pub.data.version, 2); assert.equal(pub.data.content.cards.length, 53);   // the editor's copy is never cached
     assert.equal(pub.data.content.cards[0].a, "Edited answer."); assert.equal("extra" in pub.data.content.cards[52], false);
     assert.equal((await call("/api/edit/save", { base: 1, content: { cards }, summary: "stale" })).status, 409);
   });
   await t("history lists versions and restore brings back the original as a new version", async () => {
     const h = await call("/api/edit/history"); assert.equal(h.data.length, 2); assert.equal(h.data[0].by, "staff@greenwichct.gov");
     const r = await call("/api/edit/restore", { version: 1 }); assert.equal(r.status, 200); assert.equal(r.data.version, 3);
-    const pub = await call("/api/deck"); assert.equal(pub.data.content.cards.length, 52);
+    const pub = await call("/api/edit/deck"); assert.equal(pub.data.content.cards.length, 52);
     assert.equal((await call("/api/edit/restore", { version: 99 })).status, 404);
   });
   await t("signing out ends the session", async () => {

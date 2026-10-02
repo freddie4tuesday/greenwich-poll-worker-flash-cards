@@ -283,7 +283,7 @@ $('reqForm').addEventListener('submit', async e => {
   $('reqBtn').disabled = false;
 });
 async function openApp(){
-  const r = await api('/api/deck');
+  const r = await api('/api/edit/deck');
   if(r.status !== 200){ show('signin'); $('reqMsg').className = 'msg err'; $('reqMsg').textContent = 'The cards could not be loaded. Reload the page and try again.'; return; }
   load(r.data.version, r.data.content);
   $('who').textContent = me; edId = null; edNew = false; dirty = false;
@@ -430,7 +430,7 @@ $('publishBtn').addEventListener('click', async () => {
   if(summary === null) return;
   $('publishBtn').disabled = true; $('pill').textContent = 'Publishing…';
   const r = await api('/api/edit/save', { base, content:{ cards: asDeck() }, summary: summary.trim() || 'Edited cards' });
-  if(r.status === 200){ base = r.data.version; published = cards.map(c => ({ ...c })); toast('Published. Players get the new cards the next time they open the game.'); renderAll(); return; }
+  if(r.status === 200){ base = r.data.version; published = cards.map(c => ({ ...c })); toast('Published. Players see the new cards within about a minute of opening the game.'); renderAll(); return; }
   if(r.status === 401){ show('signin'); $('reqMsg').className = 'msg err'; $('reqMsg').textContent = 'You were signed out, and the changes were not published. Sign in again.'; return; }
   updateBar(); alert(r.data.error || 'That did not publish. Try again.');
 });
@@ -454,7 +454,7 @@ $('historyBtn').addEventListener('click', async () => {
       btn.disabled = true;
       const rr = await api('/api/edit/restore', { version: v.version });
       if(rr.status !== 200){ $('histMsg').className = 'msg err'; $('histMsg').textContent = rr.data.error || 'That did not restore.'; btn.disabled = false; return; }
-      const d = await api('/api/deck'); if(d.status === 200) load(d.data.version, d.data.content);
+      const d = await api('/api/edit/deck'); if(d.status === 200) load(d.data.version, d.data.content);
       edId = null; edNew = false; dirty = false; $('app').classList.remove('editing'); renderAll(); closeHistory(); toast('Version ' + v.version + ' restored and published.');
     });
     $('histList').appendChild(el('li', null, el('div', { class:'what' }, el('b', { text:'Version ' + v.version + ': ' + v.summary }), el('small', { text: when + (v.by ? ' by ' + v.by : '') })), btn));

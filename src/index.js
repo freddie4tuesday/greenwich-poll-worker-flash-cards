@@ -4,7 +4,8 @@
   never half of a save. Sign-in, versions and restore follow Game of Strife's content library.
 
     GET  /                         the game (public)
-    GET  /api/deck                 {version, content:{cards}}: the current deck, read by the game on load (public)
+    GET  /api/deck                 {version, content:{cards}}: the deck, read by the game on load (public; cached up to 60 seconds)
+    GET  /api/edit/deck            the same, never cached; the editor reads this one      (signed in)
     GET  /edit                     the editor page (public; it shows a sign-in box until you are signed in)
     POST /api/auth/request         {email}  -> always {ok:true}; emails a sign-in link if the address is on an allowed domain
     POST /api/auth/verify          {token}  -> signs this browser in for 1 day (sets a cookie); the link works once
@@ -44,7 +45,19 @@ export default {
     };
     if (p === "/" || p === "/index.html") return page("/index.html", { "cache-control": "no-cache" });
     if (p === "/edit" || p === "/edit/") return page("/edit.html", { "cache-control": "no-store", "x-robots-tag": "noindex", "referrer-policy": "no-referrer" });
-    if (p === "/api/deck") return request.method === "GET" ? json(await stub.getContent()) : json({ error: "use GET" }, 405);
+    if (p === "/api/deck") {
+      if (request.method !== "GET") return json({ error: "use GET" }, 405);
+      // Build 2 (cache): the public deck is kept for DECK_CACHE_SECONDS (60) at the edge and in browsers, so a page load usually doesn't read the
+      // store. Cost of that: a published edit can take up to a minute to reach players (each Cloudflare location keeps its own copy, and a publish
+      // can't clear them all). The editor reads /api/edit/deck instead, which is never cached, so staff always edit the real latest deck.
+      // 0 turns it off (the tests do). On any cache failure the deck is read from the store as before.
+      const secs = env.DECK_CACHE_SECONDS === undefined ? 60 : Math.max(0, Number(env.DECK_CACHE_SECONDS) || 0);
+      const key = new Request(url.origin + "/api/deck");   // one fixed key, so a query string can't make extra copies
+      if (secs > 0) { try { const hit = await caches.default.match(key); if (hit) return hit; } catch (_) {} }
+      const res = json(await stub.getContent(), 200, secs > 0 ? { "cache-control": "public, max-age=" + secs } : {});
+      if (secs > 0) { try { ctx.waitUntil(caches.default.put(key, res.clone())); } catch (_) {} }
+      return res;
+    }
 
     const posting = () => {
       // A script on some other website could otherwise act through a signed-in visitor's browser. A browser always sends Origin on a
@@ -96,6 +109,7 @@ export default {
       if (!who) return json({ error: "Not signed in. Reload the page and ask for a new sign-in link." }, 401);
       const what = p.slice("/api/edit/".length);
       if (request.method === "GET") {
+        if (what === "deck") return json(await stub.getContent());   // the editor's copy: never cached, so its version number is always the real one
         if (what === "history") return json(await stub.history());
         const m = /^version\/(\d{1,9})$/.exec(what);
         if (m) { const v = await stub.version(Number(m[1])); return v ? json(v) : json({ error: "There is no such version." }, 404); }
