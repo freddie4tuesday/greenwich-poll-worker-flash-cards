@@ -31,3 +31,4 @@ Run both test commands before every deploy. Check every UI change at phone sizes
 - The Resend key is the Worker secret `RESEND_API_KEY` (`npx wrangler secret put RESEND_API_KEY`). The Cloudflare token is `CLOUDFLARE_API_TOKEN` in the environment. Never print, commit or document either.
 - Only `greenwichct.gov` addresses may sign in (`ALLOWED_DOMAINS` in `wrangler.jsonc`: exact match, no subdomains).
 - The hostname has its own specific route because `*.electionadminsuite.com/*` belongs to poll-worker-system, which creates its own addresses in the same zone. Never add a wildcard route.
+- Merging to `main` deploys to the live site automatically (`.github/workflows/deploy.yml`), by the owner's standing request. Work on a branch, and merge to `main` only when the owner says so.
